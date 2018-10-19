@@ -1,0 +1,57 @@
+#+OPTIONS: toc:nil ^:nil num:nil
+
+* Analyse Code Source
+
+Le code source se trouve dans les dossiers:
+- /App/
+- /plug-ins/
+- /libgimp/
+- /libgimpbase/
+- /libgimpcolor/
+- /libgimpconfig/
+- /libgimpmath/
+- /libgimpmodule/
+- /libgimpthumb/
+
+*33 dossiers, 2191 fichiers*
+
+#+BEGIN_SRC txt
+
+33 directories
+
+app 					Dossier qui contient le code gérant l'application de GIMP.
+├── actions
+├── config
+├── core
+├── dialogs
+├── display
+├── file
+├── gegl
+├── gui
+├── menus
+├── operations
+│   ├── layer-modes
+│   ├── layer-modes-legacy
+│   └── tests
+│       └── data
+├── paint
+├── pdb
+├── plug-in
+├── propgui
+├── tests
+│   ├── files
+│   ├── gimpdir
+│   │   ├── brushes
+│   │   ├── gradients
+│   │   └── patterns
+│   └── gimpdir-empty
+│       ├── brushes
+│       ├── gradients
+│       └── patterns
+├── text
+├── tools
+├── vectors
+├── widgets
+└── xcf
+
+#+END_SRC
