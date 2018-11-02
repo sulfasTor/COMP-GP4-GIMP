@@ -28,11 +28,15 @@
   .LINK  { color: aqua;   background-color: transparent;}
   .SOCK  { color: fuchsia;background-color: transparent;}
   .EXEC  { color: green;  background-color: transparent;}
-  .CODE  { color: black; background-color:  #DAF7A6;}
+  .CODE  { color: #1ec503 ; background-color: black;}
   .DOCS  { color: black; background-color: #fe4f6a;}
   .LANG  { color: black; background-color: #12A4B1;}
-  .TEST  { color: black; background-color: #00CA90;}
+  .TEST  { color: black; background-color: #FF0000;}
   .ASSETS  { color: white; background-color: #781B4C;}
+  .DEVTOOLS  { color: black; background-color: #99BB00;}
+  .GUI  { color: black; background-color: #FFFF00;}
+  .ETC  { color: black; background-color: #FF12AB;}
+  .MACROS  { color: black; background-color: #00AA00;}
   -->
  </style>
 </head>
@@ -49,13 +53,17 @@
     <ul>
       <li class="CODE">Code Source</li>
       <li class="DOCS">Documentation</li>
-      <li class="LANG">Traductions</li>
+      <li class="LANG">Internationalisation (traductions, formats, etc..)</li>
       <li class="TEST">Tests</li>
-      <li class="ASSETS">Data</li>
+      <li class="ASSETS">Data (paramètres, etc, ...)</li>
+      <li class="GUI">Interface graphique</li>
+      <li class="ETC">Configurations globales, etc...</li>
+      <li class="MACROS">Macros</li>
+      <li class="DEVTOOLS">Outils de développment (débougage,
+      performance, etc..)</li>
     </ul>
 
-    
-    
+        
 	<a class="" >gimp-master</a><br>
 	├── <a class="CODE" >app</a><br>
 	│   ├── <a class="CODE" >actions</a><br>
@@ -78,13 +86,13 @@
 	│   ├── <a class="CODE" >vectors</a><br>
 	│   ├── <a class="CODE" >widgets</a><br>
 	│   └── <a class="CODE" >xcf</a><br>
-	├── <a class="" >app-tools</a><br>
-	├── <a class="" >build</a><br>
-	│   ├── <a class="" >buildbot</a><br>
-	│   ├── <a class="" >docker</a><br>
-	│   ├── <a class="" >flatpak</a><br>
-	│   └── <a class="" >windows</a><br>
-	├── <a class="" >cursors</a><br>
+	├── <a class="DEVTOOLS" >app-tools</a><br>
+	├── <a class="DEVTOOLS" >build</a><br>
+	│   ├── <a class="DEVTOOLS" >buildbot</a><br>
+	│   ├── <a class="DEVTOOLS" >docker</a><br>
+	│   ├── <a class="DEVTOOLS" >flatpak</a><br>
+	│   └── <a class="DEVTOOLS" >windows</a><br>
+	├── <a class="GUI" >cursors</a><br>
 	├── <a class="ASSETS" >data</a><br>
 	│   ├── <a class="ASSETS" >brushes</a><br>
 	│   ├── <a class="ASSETS" >dynamics</a><br>
@@ -97,15 +105,15 @@
 	│   ├── <a class="ASSETS" >tags</a><br>
 	│   ├── <a class="ASSETS" >tips</a><br>
 	│   └── <a class="ASSETS" >tool-presets</a><br>
-	├── <a class="" >desktop</a><br>
-	│   ├── <a class="" >16x16</a><br>
-	│   ├── <a class="" >22x22</a><br>
-	│   ├── <a class="" >24x24</a><br>
-	│   ├── <a class="" >256x256</a><br>
-	│   ├── <a class="" >32x32</a><br>
-	│   ├── <a class="" >48x48</a><br>
-	│   ├── <a class="" >64x64</a><br>
-	│   └── <a class="" >src</a><br>
+	├── <a class="ASSETS" >desktop</a><br>
+	│   ├── <a class="ASSETS" >16x16</a><br>
+	│   ├── <a class="ASSETS" >22x22</a><br>
+	│   ├── <a class="ASSETS" >24x24</a><br>
+	│   ├── <a class="ASSETS" >256x256</a><br>
+	│   ├── <a class="ASSETS" >32x32</a><br>
+	│   ├── <a class="ASSETS" >48x48</a><br>
+	│   ├── <a class="ASSETS" >64x64</a><br>
+	│   └── <a class="ASSETS" >src</a><br>
 	├── <a class="DOCS" >devel-docs</a><br>
 	│   ├── <a class="DOCS" >app</a><br>
 	│   ├── <a class="DOCS" >libgimp</a><br>
@@ -118,11 +126,11 @@
 	│   ├── <a class="DOCS" >libgimpwidgets</a><br>
 	│   └── <a class="DOCS" >tools</a><br>
 	├── <a class="DOCS" >docs</a><br>
-	├── <a class="" >etc</a><br>
-	├── <a class="" >icons</a><br>
-	│   ├── <a class="" >Color</a><br>
-	│   ├── <a class="" >Legacy</a><br>
-	│   └── <a class="" >Symbolic</a><br>
+	├── <a class="ETC" >etc</a><br>
+	├── <a class="GUI" >icons</a><br>
+	│   ├── <a class="GUI" >Color</a><br>
+	│   ├── <a class="GUI" >Legacy</a><br>
+	│   └── <a class="GUI" >Symbolic</a><br>
 	├── <a class="CODE" >libgimp</a><br>
 	├── <a class="CODE" >libgimpbase</a><br>
 	├── <a class="CODE" >libgimpcolor</a><br>
@@ -131,9 +139,9 @@
 	├── <a class="CODE" >libgimpmodule</a><br>
 	├── <a class="CODE" >libgimpthumb</a><br>
 	├── <a class="CODE" >libgimpwidgets</a><br>
-	├── <a class="" >m4macros</a><br>
-	├── <a class="" >menus</a><br>
-	├── <a class="" >modules</a><br>
+	├── <a class="MACROS" >m4macros</a><br>
+	├── <a class="GUI" >menus</a><br>
+	├── <a class="CODE" >modules</a><br>
 	├── <a class="CODE" >pdb</a><br>
 	│   └── <a class="CODE" >groups</a><br>
 	├── <a class="CODE" >plug-ins</a><br>
@@ -178,8 +186,8 @@
 	├── <a class="LANG" >po-tags</a><br>
 	├── <a class="LANG" >po-tips</a><br>
 	├── <a class="LANG" >po-windows-installer</a><br>
-	├── <a class="" >themes</a><br>
-	│   └── <a class="" >System</a><br>
+	├── <a class="GUI" >themes</a><br>
+	│   └── <a class="GUI" >System</a><br>
 	└── <a class="CODE" >tools</a><br>
 	<br><br>
 	</p>
