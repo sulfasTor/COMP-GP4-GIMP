@@ -98,6 +98,10 @@ D'après le fichier README ce dossier contient les fonctions "wrappers" du PDB s
 
 Code gérant les plug-ins de GIMP.
 **** propgui
+
+Code gérant des effets et transformations des images. Vu la présence
+des fichiers avec le motif gimppropgui-<nom de l'efft>.c.
+
 **** tests
 
 Ce dossier contient le code permettant de tester plusieurs fonctionnalités de GIMP.
