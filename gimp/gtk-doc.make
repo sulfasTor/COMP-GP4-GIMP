@@ -1,0 +1,1 @@
+/usr/local/share/gtk-doc/data/gtk-doc.make
