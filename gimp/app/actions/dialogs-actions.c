@@ -257,14 +257,20 @@ static const GimpStringActionEntry dialogs_toplevel_actions[] =
   { "dialogs-tips", GIMP_STOCK_INFO,
     NC_("dialogs-action", "_Generic dialog"), NULL,
     NC_("dialogs-action", "A generic dialog created by Moises"),
-    "gimp-tips-dialog",
-    GIMP_HELP_TIPS_DIALOG },
+    GIMP_HELP_TIPS_DIALOG,
+    "gimp-mydiag-dialog" },
+
+    { "dialogs-generic2", NULL,
+    NC_("dialogs-action", "_Generic dialog no. 2"), NULL,
+    NC_("dialogs-action", "Un deuxième dialogue générique."),
+    GIMP_HELP_GENERIC2_DIALOG,
+    "gimp-mydiag2-dialog" },
   
   { "dialogs-mydiag", GIMP_STOCK_INFO,
     NC_("dialogs-action", "_Tip of the Day"), NULL,
     NC_("dialogs-action", "Show some helpful tips on using GIMP"),
-    "gimp-mydiag-dialog",
-    GIMP_HELP_TIPS_DIALOG },
+    "gimp-tips-dialog",
+    GIMP_HELP_MYDIAG_DIALOG },
 
   { "dialogs-about", GTK_STOCK_ABOUT,
 #if defined (G_OS_WIN32)

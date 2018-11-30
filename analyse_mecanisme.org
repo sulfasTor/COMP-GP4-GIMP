@@ -6,3 +6,6 @@ l'utilisation de la variable /authors/ dans =app/dialog/authors.h= on
 arrive à l'appel /dialogs_init/ dans la fonction /gui_restore_callback/ dans =app/gui/gui.c/.
 
 Cette fonction initialize les dialogs des menus de la barre supérieure.
+
+
+** Changement nouvel élément menu

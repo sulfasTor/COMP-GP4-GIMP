@@ -497,6 +497,8 @@
 #define GIMP_HELP_MODULE_DIALOG                   "gimp-module-dialog"
 #define GIMP_HELP_NAVIGATION_DIALOG               "gimp-navigation-dialog"
 #define GIMP_HELP_TEXT_EDITOR_DIALOG              "gimp-text-editor-dialog"
+#define GIMP_HELP_MYDIAG	                  "gimp-mydiag-dialog"
+#define GIMP_HELP_GENERIC2_DIALOG                 "gimp-generic2-dialog"
 #define GIMP_HELP_TIPS_DIALOG                     "gimp-tips-dialog"
 #define GIMP_HELP_UNDO_DIALOG                     "gimp-undo-dialog"
 

@@ -639,13 +639,15 @@
     </menu>
 
     <menu action="help-menu" name="Help">
-      <menuitem action="help-help" />
-      <menuitem action="help-context-help" />
-      <menuitem action="dialogs-tips" />
-      <menuitem action="dialogs-about" />
-      <separator />
-      <placeholder name="Programming" />
-      <separator />
+      <menuitem action="help-help"/>
+      <menuitem action="help-context-help"/>
+      <menuitem action="dialogs-tips"/>
+      <menuitem action="dialogs-about"/>
+      <menuitem action="dialogs-generic2"/>
+      <menuitem action="dialogs-mydiag"/>
+      <separator/>
+      <placeholder name="Programming"/>
+      <separator/>
     </menu>
 
   </menubar-and-popup>
