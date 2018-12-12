@@ -1,0 +1,9 @@
+app/actions/dialogs-actions.c
+app/dialogs/Makefile.am
+app/dialogs/dialogs-constructors.c
+app/dialogs/dialogs-constructors.h
+app/dialogs/dialogs.c
+app/dialogs/mydiag-dialog.c
+app/dialogs/mydiag-dialog.h
+app/widgets/gimphelp-ids.h
+menus/image-menu.xml.in
