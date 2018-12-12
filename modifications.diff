@@ -1,0 +1,378 @@
+diff --git a/.gitignore b/.gitignore
+index e7c13a9421..b30c4b15de 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -47,3 +47,4 @@
+ /stamp-h.in
+ /stamp-h1
+ /test-driver
++*~
+diff --git a/app/actions/dialogs-actions.c b/app/actions/dialogs-actions.c
+index ec994c078d..1f6d6b7b97 100644
+--- a/app/actions/dialogs-actions.c
++++ b/app/actions/dialogs-actions.c
+@@ -254,11 +254,17 @@ static const GimpStringActionEntry dialogs_toplevel_actions[] =
+     "gimp-module-dialog",
+     GIMP_HELP_MODULE_DIALOG },
+ 
++  { "dialogs-mydiag", GIMP_STOCK_INFO,
++    NC_("dialogs-action", "_Generic dialog"), NULL,
++    NC_("dialogs-action", "A generic dialog created by Moises"),
++    "gimp-mydiag-dialog",
++    GIMP_HELP_TIPS_DIALOG },
++  
+   { "dialogs-tips", GIMP_STOCK_INFO,
+     NC_("dialogs-action", "_Tip of the Day"), NULL,
+     NC_("dialogs-action", "Show some helpful tips on using GIMP"),
+     "gimp-tips-dialog",
+-    GIMP_HELP_TIPS_DIALOG },
++    GIMP_HELP_MYDIAG_DIALOG },
+ 
+   { "dialogs-about", GTK_STOCK_ABOUT,
+ #if defined (G_OS_WIN32)
+diff --git a/app/dialogs/Makefile.am b/app/dialogs/Makefile.am
+index bcbdaacfc3..125a950c5c 100644
+--- a/app/dialogs/Makefile.am
++++ b/app/dialogs/Makefile.am
+@@ -79,6 +79,8 @@ libappdialogs_a_sources = \
+ 	template-options-dialog.h	\
+ 	tips-dialog.c			\
+ 	tips-dialog.h			\
++	mydiag-dialog.c			\
++	mydiag-dialog.h			\
+ 	tips-parser.c			\
+ 	tips-parser.h			\
+ 	user-install-dialog.c		\
+diff --git a/app/dialogs/dialogs-constructors.c b/app/dialogs/dialogs-constructors.c
+index ff16c5f716..f70d9ace46 100644
+--- a/app/dialogs/dialogs-constructors.c
++++ b/app/dialogs/dialogs-constructors.c
+@@ -78,6 +78,7 @@
+ #include "preferences-dialog.h"
+ #include "quit-dialog.h"
+ #include "tips-dialog.h"
++#include "mydiag-dialog.h"
+ 
+ #include "gimp-intl.h"
+ 
+@@ -176,6 +177,15 @@ dialogs_palette_import_get (GimpDialogFactory *factory,
+   return palette_import_dialog_new (context);
+ }
+ 
++GtkWidget *
++dialogs_mydiag_get (GimpDialogFactory *factory,
++                  GimpContext       *context,
++                  GimpUIManager     *ui_manager,
++                  gint               view_size)
++{
++  return mydiag_dialog_create (context->gimp);
++}
++
+ GtkWidget *
+ dialogs_tips_get (GimpDialogFactory *factory,
+                   GimpContext       *context,
+@@ -185,6 +195,7 @@ dialogs_tips_get (GimpDialogFactory *factory,
+   return tips_dialog_create (context->gimp);
+ }
+ 
++
+ GtkWidget *
+ dialogs_about_get (GimpDialogFactory *factory,
+                    GimpContext       *context,
+diff --git a/app/dialogs/dialogs-constructors.h b/app/dialogs/dialogs-constructors.h
+index f8687286db..7f799783c6 100644
+--- a/app/dialogs/dialogs-constructors.h
++++ b/app/dialogs/dialogs-constructors.h
+@@ -65,6 +65,11 @@ GtkWidget * dialogs_tips_get               (GimpDialogFactory *factory,
+                                             GimpContext       *context,
+                                             GimpUIManager     *ui_manager,
+                                             gint               view_size);
++GtkWidget * dialogs_mydiag_get               (GimpDialogFactory *factory,
++                                            GimpContext       *context,
++                                            GimpUIManager     *ui_manager,
++                                            gint               view_size);
++
+ GtkWidget * dialogs_about_get              (GimpDialogFactory *factory,
+                                             GimpContext       *context,
+                                             GimpUIManager     *ui_manager,
+diff --git a/app/dialogs/dialogs.c b/app/dialogs/dialogs.c
+index 8c4d9e5614..985261c24f 100644
+--- a/app/dialogs/dialogs.c
++++ b/app/dialogs/dialogs.c
+@@ -270,7 +270,9 @@ static const GimpDialogFactoryEntry entries[] =
+             dialogs_module_get,             TRUE, TRUE,  TRUE),
+   TOPLEVEL ("gimp-palette-import-dialog",
+             dialogs_palette_import_get,     TRUE, TRUE,  TRUE),
+-  TOPLEVEL ("gimp-tips-dialog",
++  TOPLEVEL ("gimp-mydiag-dialog",
++            dialogs_mydiag_get,               TRUE, FALSE, FALSE),
++    TOPLEVEL ("gimp-tips-dialog",
+             dialogs_tips_get,               TRUE, FALSE, FALSE),
+   TOPLEVEL ("gimp-about-dialog",
+             dialogs_about_get,              TRUE, FALSE, FALSE),
+diff --git a/app/dialogs/mydiag-dialog.c b/app/dialogs/mydiag-dialog.c
+new file mode 100644
+index 0000000000..76954e793d
+--- /dev/null
++++ b/app/dialogs/mydiag-dialog.c
+@@ -0,0 +1,169 @@
++/* GIMP - The GNU Image Manipulation Program
++ * Copyright (C) 1995 Spencer Kimball and Peter Mattis
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include "config.h"
++
++#include <gtk/gtk.h>
++
++#include "libgimpbase/gimpbase.h"
++#include "libgimpwidgets/gimpwidgets.h"
++
++#include "dialogs-types.h"
++
++#include "config/gimpguiconfig.h"
++
++#include "core/gimp.h"
++
++#include "mydiag-dialog.h"
++
++#include "gimp-intl.h"
++
++enum
++  {
++   RESPONSE_PREVIOUS = 1,
++   RESPONSE_NEXT     = 2
++  };
++
++static void  mydiag_dialog_response (GtkWidget     *dialog,
++				   gint           response);
++static void  mydiag_dialog_destroy  (GtkWidget     *widget,
++				   GimpGuiConfig *config);
++static void  more_button_clicked  (GtkWidget     *button,
++				   Gimp          *gimp);
++
++
++static GtkWidget *tips_dialog = NULL;
++static GtkWidget *tip_label   = NULL;
++static GtkWidget *more_button = NULL;
++
++GtkWidget *
++mydiag_dialog_create (Gimp *gimp)
++{
++  GimpGuiConfig *config;
++  GtkWidget     *vbox;
++  GtkWidget     *hbox;
++  GtkWidget     *button;
++  GtkWidget     *image;
++
++  g_return_val_if_fail (GIMP_IS_GIMP (gimp), NULL);
++
++
++  tips_dialog = gimp_dialog_new (_("GIMP Generic Dialog"),
++				 "gimp-tip-of-the-day",
++				 NULL, 0, NULL, NULL,
++				 NULL);
++
++  button = gtk_dialog_add_button (GTK_DIALOG (tips_dialog),
++                                  _("_Previous Tip"), RESPONSE_PREVIOUS);
++  gtk_button_set_image (GTK_BUTTON (button),
++                        gtk_image_new_from_stock (GTK_STOCK_GO_BACK,
++                                                  GTK_ICON_SIZE_BUTTON));
++
++  button = gtk_dialog_add_button (GTK_DIALOG (tips_dialog),
++                                  _("_Next Tip"), RESPONSE_NEXT);
++  gtk_button_set_image (GTK_BUTTON (button),
++                        gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD,
++                                                  GTK_ICON_SIZE_BUTTON));
++
++  gtk_dialog_set_response_sensitive (GTK_DIALOG (tips_dialog),
++                                     RESPONSE_NEXT, 1);
++  gtk_dialog_set_response_sensitive (GTK_DIALOG (tips_dialog),
++                                     RESPONSE_PREVIOUS, 0);
++
++  g_signal_connect (tips_dialog, "response",
++                    G_CALLBACK (mydiag_dialog_response),
++                    NULL);
++  g_signal_connect (tips_dialog, "destroy",
++                    G_CALLBACK (mydiag_dialog_destroy),
++                    config);
++
++  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
++  gtk_container_set_border_width (GTK_CONTAINER (vbox), 12);
++  gtk_box_pack_start (GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (tips_dialog))),
++                      vbox, TRUE, TRUE, 0);
++  gtk_widget_show (vbox);
++
++  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
++  gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
++  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
++  gtk_widget_show (hbox);
++
++  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
++  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
++  gtk_widget_show (vbox);
++
++  image = gtk_image_new_from_stock (GIMP_STOCK_INFO, GTK_ICON_SIZE_DIALOG);
++  gtk_misc_set_alignment (GTK_MISC (image), 0.5, 0.0);
++  gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
++  gtk_widget_show (image);
++
++  gtk_container_set_focus_chain (GTK_CONTAINER (hbox), NULL);
++
++  tip_label = gtk_label_new (NULL);
++  gtk_label_set_selectable (GTK_LABEL (tip_label), TRUE);
++  gtk_label_set_justify (GTK_LABEL (tip_label), GTK_JUSTIFY_LEFT);
++  gtk_label_set_line_wrap (GTK_LABEL (tip_label), TRUE);
++  gtk_misc_set_alignment (GTK_MISC (tip_label), 0.5, 0.0);
++  gtk_box_pack_start (GTK_BOX (vbox), tip_label, TRUE, TRUE, 0);
++  gtk_widget_show (tip_label);
++
++  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
++  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
++  gtk_widget_show (hbox);
++
++  more_button = gtk_link_button_new_with_label ("http://univ-paris8.fr/",
++						/*  a link to the related section in the user manual  */
++                                                _("Université Paris VIII"));
++  gtk_widget_show (more_button);
++  gtk_box_pack_start (GTK_BOX (hbox), more_button, FALSE, FALSE, 0);
++
++  g_signal_connect (more_button, "clicked",
++                    G_CALLBACK (more_button_clicked),
++                    gimp);
++
++  return tips_dialog;
++}
++
++static void
++mydiag_dialog_destroy (GtkWidget     *widget,
++                     GimpGuiConfig *config)
++{
++  tips_dialog = NULL;
++  free(tips_dialog);
++}
++
++static void
++mydiag_dialog_response (GtkWidget *dialog,
++                      gint       response)
++{
++  switch (response)
++    {
++    case RESPONSE_PREVIOUS:
++      break;
++
++    case RESPONSE_NEXT:
++      break;
++
++    default:
++      break;
++    }
++}
++
++static void
++more_button_clicked (GtkWidget *button,
++                     Gimp      *gimp)
++{}
+diff --git a/app/dialogs/mydiag-dialog.h b/app/dialogs/mydiag-dialog.h
+new file mode 100644
+index 0000000000..89cd34b299
+--- /dev/null
++++ b/app/dialogs/mydiag-dialog.h
+@@ -0,0 +1,23 @@
++/* GIMP - The GNU Image Manipulation Program
++ * Copyright (C) 1995 Spencer Kimball and Peter Mattis
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#ifndef __MYDIAG_DIALOG_H__
++#define __MYDIAG_DIALOG_H__
++
++GtkWidget * mydiag_dialog_create (Gimp *gimp);
++
++#endif /* __MYDIAG_DIALOG_H__ */
+diff --git a/app/widgets/gimphelp-ids.h b/app/widgets/gimphelp-ids.h
+index e6f5132c59..c455b36958 100644
+--- a/app/widgets/gimphelp-ids.h
++++ b/app/widgets/gimphelp-ids.h
+@@ -497,6 +497,7 @@
+ #define GIMP_HELP_MODULE_DIALOG                   "gimp-module-dialog"
+ #define GIMP_HELP_NAVIGATION_DIALOG               "gimp-navigation-dialog"
+ #define GIMP_HELP_TEXT_EDITOR_DIALOG              "gimp-text-editor-dialog"
++#define GIMP_HELP_MYDIAG_DIALOG	                  "gimp-mydiag-dialog"
+ #define GIMP_HELP_TIPS_DIALOG                     "gimp-tips-dialog"
+ #define GIMP_HELP_UNDO_DIALOG                     "gimp-undo-dialog"
+ 
+diff --git a/autogen.sh b/autogen.sh
+index 3a5be3b998..7697f56c1c 100755
+--- a/autogen.sh
++++ b/autogen.sh
+@@ -9,15 +9,15 @@
+ # tools and you shouldn't use this script.  Just call ./configure
+ # directly.
+ 
+-ACLOCAL=${ACLOCAL-aclocal-1.11}
++ACLOCAL=${ACLOCAL-aclocal-1.16}
+ AUTOCONF=${AUTOCONF-autoconf}
+ AUTOHEADER=${AUTOHEADER-autoheader}
+-AUTOMAKE=${AUTOMAKE-automake-1.11}
++AUTOMAKE=${AUTOMAKE-automake-1.16}
+ LIBTOOLIZE=${LIBTOOLIZE-libtoolize}
+ 
+ AUTOCONF_REQUIRED_VERSION=2.54
+-AUTOMAKE_REQUIRED_VERSION=1.10.0
+-INTLTOOL_REQUIRED_VERSION=0.40.1
++AUTOMAKE_REQUIRED_VERSION=1.16.0
++INTLTOOL_REQUIRED_VERSION=0.51.0
+ LIBTOOL_REQUIRED_VERSION=1.5
+ LIBTOOL_WIN32_REQUIRED_VERSION=2.2
+ 
+diff --git a/menus/image-menu.xml.in b/menus/image-menu.xml.in
+index 233e794a5e..29f0525bb5 100644
+--- a/menus/image-menu.xml.in
++++ b/menus/image-menu.xml.in
+@@ -639,13 +639,14 @@
+     </menu>
+ 
+     <menu action="help-menu" name="Help">
+-      <menuitem action="help-help" />
+-      <menuitem action="help-context-help" />
+-      <menuitem action="dialogs-tips" />
+-      <menuitem action="dialogs-about" />
+-      <separator />
+-      <placeholder name="Programming" />
+-      <separator />
++      <menuitem action="help-help"/>
++      <menuitem action="help-context-help"/>
++      <menuitem action="dialogs-tips"/>
++      <menuitem action="dialogs-about"/>
++      <menuitem action="dialogs-mydiag"/>
++      <separator/>
++      <placeholder name="Programming"/>
++      <separator/>
+     </menu>
+ 
+   </menubar-and-popup>
